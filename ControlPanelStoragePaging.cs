@@ -263,16 +263,18 @@ namespace StationAssistant
         private static Text CreateLabel(RectTransform parent, Font font)
         {
             GameObject left = Arrow(parent, font, true);
-            left.GetComponent<RectTransform>().anchoredPosition = new Vector2(-48f, 0f);
+            RectTransform leftRt = left.GetComponent<RectTransform>();
+            leftRt.anchoredPosition = new Vector2(-48f, -(leftRt.sizeDelta.y * 2f));
             GameObject right = Arrow(parent, font, false);
-            right.GetComponent<RectTransform>().anchoredPosition = new Vector2(48f, 0f);
+            RectTransform rightRt = right.GetComponent<RectTransform>();
+            rightRt.anchoredPosition = new Vector2(48f, -(rightRt.sizeDelta.y * 2f));
             GameObject go = new GameObject("label", typeof(RectTransform), typeof(Text));
             go.transform.SetParent(parent, false);
             RectTransform rt = (RectTransform)go.transform;
             rt.sizeDelta = new Vector2(60f, 22f);
             Text text = go.GetComponent<Text>();
             text.font = font;
-            text.fontSize = 14;
+            text.fontSize = Mathf.CeilToInt(14f * 1.3f);
             text.alignment = TextAnchor.MiddleCenter;
             text.color = new Color(0.75f, 0.88f, 1f, 0.95f);
             text.raycastTarget = false;

@@ -188,7 +188,7 @@ namespace StationAssistant
             Attach(__instance, __instance.speedText, () =>
             {
                 int speed = __instance.factorySystem.minerPool[__instance.minerId].speed;
-                NumericEditDialog.Show("采集效率", speed.ToString(), "MinerComponent.speed", InputField.ContentType.IntegerNumber, text =>
+                PopNumber.Show(YummiHarness.Lang.En("Mining speed").ZhCN("采集效率"), speed.ToString(), FieldValue("MinerComponent.speed", "速度值（界面百分比 = 该值 / 100）", "speed (shown percent = value / 100)", speed), InputField.ContentType.IntegerNumber, text =>
                 {
                     if (!int.TryParse(text.Trim(), out int value))
                     {
@@ -208,7 +208,7 @@ namespace StationAssistant
                 return;
             }
             int current = station.storage[index].max;
-            NumericEditDialog.Show("物品容量", current.ToString(), "StationStore.max", InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(YummiHarness.Lang.En("Item capacity").ZhCN("物品容量"), current.ToString(), FieldValue("StationStore.max", "个", "items", current), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!int.TryParse(text.Trim(), out int value) || value < 0)
                 {
@@ -226,7 +226,7 @@ namespace StationAssistant
                 return;
             }
             long current = factory.powerSystem.consumerPool[station.pcId].workEnergyPerTick;
-            NumericEditDialog.Show("充电功率", current.ToString(), "workEnergyPerTick，单位 J/tick", InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(YummiHarness.Lang.En("Charge power").ZhCN("充电功率"), current.ToString(), FieldValue("workEnergyPerTick", "焦耳每帧", "joules per tick", current), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!long.TryParse(text.Trim(), out long value) || value < 0)
                 {
@@ -264,7 +264,7 @@ namespace StationAssistant
                 return;
             }
             int current = factory.factorySystem.minerPool[station.minerId].speed;
-            NumericEditDialog.Show("采集效率", current.ToString(), "MinerComponent.speed", InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(YummiHarness.Lang.En("Mining speed").ZhCN("采集效率"), current.ToString(), FieldValue("MinerComponent.speed", "速度值（界面百分比 = 该值 / 100）", "speed (shown percent = value / 100)", current), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!int.TryParse(text.Trim(), out int value))
                 {
@@ -297,7 +297,7 @@ namespace StationAssistant
 
         private static void EditEnergy(StationComponent station)
         {
-            NumericEditDialog.Show("充电上限", station.energyMax.ToString(), "StationComponent.energyMax。不走破限开关。", InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(YummiHarness.Lang.En("Charge cap").ZhCN("充电上限"), station.energyMax.ToString(), FieldValue("energyMax", "焦耳", "joules", station.energyMax), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!long.TryParse(text.Trim(), out long value) || value < 1)
                 {
@@ -309,6 +309,12 @@ namespace StationAssistant
                     station.energy = station.energyMax;
                 }
             });
+        }
+
+        private static string FieldValue(string variable, string unitZh, string unitEn, long current)
+        {
+            return YummiHarness.Lang.En($"In-game variable: {variable}\nUnit: {unitEn}\nCurrent value: {current}")
+                .ZhCN($"游戏内的变量名为 {variable}\n单位是{unitZh}\n目前的值为 {current}");
         }
 
         private static void Attach(Component owner, Text label, System.Action action)

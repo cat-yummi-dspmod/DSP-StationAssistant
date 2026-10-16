@@ -264,7 +264,7 @@ namespace StationAssistant
             chrome.anchorMin = new Vector2(0.5f, 1f);
             chrome.anchorMax = new Vector2(0.5f, 1f);
             chrome.pivot = new Vector2(0.5f, 1f);
-            chrome.anchoredPosition = new Vector2(0f, -18f);
+            chrome.anchoredPosition = new Vector2(28f * 2.5f, -18f);
             chrome.sizeDelta = new Vector2(160f, 28f);
             CreateArrow(chrome, font, true);
             pageLabel = CreateLabel(chrome, font);
@@ -279,8 +279,8 @@ namespace StationAssistant
             rt.anchorMin = new Vector2(left ? 0f : 1f, 0.5f);
             rt.anchorMax = rt.anchorMin;
             rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = new Vector2(left ? 16f : -16f, 0f);
             rt.sizeDelta = new Vector2(28f, 24f);
+            rt.anchoredPosition = new Vector2(left ? 37f : -37f, -(rt.sizeDelta.y * 1.5f));
             go.GetComponent<Image>().color = new Color(0.62f, 0.84f, 1f, 0.55f);
             Button button = go.GetComponent<Button>();
             button.onClick.AddListener(() => page += left ? -1 : 1);
@@ -308,10 +308,13 @@ namespace StationAssistant
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(70f, 24f);
+            rt.sizeDelta = new Vector2(80f, 36f);
+            rt.anchoredPosition = new Vector2(0f, -36f);
             Text text = go.GetComponent<Text>();
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
             text.font = font;
-            text.fontSize = 14;
+            text.fontSize = Mathf.CeilToInt(14f * 1.3f);
             text.alignment = TextAnchor.MiddleCenter;
             text.color = new Color(0.75f, 0.88f, 1f, 0.95f);
             text.raycastTarget = false;

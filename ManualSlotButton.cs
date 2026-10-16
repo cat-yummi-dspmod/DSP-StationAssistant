@@ -12,7 +12,12 @@ namespace StationAssistant
                 return;
             }
             Transform existing = window.windowTrans.Find("station-assistant-set-slots");
-            if (!Settings.ManualSlotButton)
+            bool tower = false;
+            if (window.transport != null && window.stationId > 0 && window.stationId < window.transport.stationPool.Length)
+            {
+                tower = SlotStorage.IsTower(window.transport.stationPool[window.stationId]);
+            }
+            if (!Settings.ManualSlotButton || !tower)
             {
                 if (existing != null)
                 {
@@ -23,18 +28,32 @@ namespace StationAssistant
             if (existing != null)
             {
                 existing.gameObject.SetActive(true);
+                ApplyLayout((RectTransform)existing, window);
+                Text label = existing.GetComponentInChildren<Text>();
+                if (label != null)
+                {
+                    label.text = SlotButtonText();
+                    label.color = Color.white;
+                }
                 return;
             }
-            Font font = window.titleText != null ? window.titleText.font : null;
+            UIButton sample = window.stationSettingTabBtn;
+            Image sampleImage = sample != null ? sample.GetComponent<Image>() : null;
+            Text sampleText = sample != null ? sample.GetComponentInChildren<Text>(true) : null;
+            Font font = sampleText != null ? sampleText.font : (window.titleText != null ? window.titleText.font : null);
             GameObject go = new GameObject("station-assistant-set-slots", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(window.windowTrans, false);
-            RectTransform rt = (RectTransform)go.transform;
-            rt.anchorMin = new Vector2(1f, 1f);
-            rt.anchorMax = new Vector2(1f, 1f);
-            rt.pivot = new Vector2(1f, 1f);
-            rt.anchoredPosition = new Vector2(-16f, -12f);
-            rt.sizeDelta = new Vector2(132f, 26f);
-            go.GetComponent<Image>().color = new Color(0.16f, 0.28f, 0.38f, 0.9f);
+            Image image = go.GetComponent<Image>();
+            if (sampleImage != null && sampleImage.sprite != null)
+            {
+                image.sprite = sampleImage.sprite;
+                image.type = sampleImage.type;
+                image.color = sampleImage.color;
+            }
+            else
+            {
+                image.color = new Color(0.16f, 0.28f, 0.38f, 0.9f);
+            }
             UIStationWindow captured = window;
             go.GetComponent<Button>().onClick.AddListener(() => Open(captured));
             GameObject textGo = new GameObject("t", typeof(RectTransform), typeof(Text));
@@ -46,11 +65,31 @@ namespace StationAssistant
             tr.offsetMax = Vector2.zero;
             Text text = textGo.GetComponent<Text>();
             text.font = font;
-            text.fontSize = 13;
+            text.fontSize = sampleText != null ? sampleText.fontSize : 13;
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.white;
             text.raycastTarget = false;
-            text.text = "设置槽位数目";
+            text.text = SlotButtonText();
+            ApplyLayout((RectTransform)go.transform, window);
+        }
+
+        private static void ApplyLayout(RectTransform rt, UIStationWindow window)
+        {
+            RectTransform sample = window.stationSettingTabBtn != null
+                ? window.stationSettingTabBtn.transform as RectTransform
+                : null;
+            float sampleWidth = sample != null && sample.rect.width > 1f ? sample.rect.width : 132f;
+            float sampleHeight = sample != null && sample.rect.height > 1f ? sample.rect.height : 26f;
+            rt.anchorMin = new Vector2(1f, 1f);
+            rt.anchorMax = new Vector2(1f, 1f);
+            rt.pivot = new Vector2(1f, 1f);
+            rt.sizeDelta = new Vector2(sampleWidth, sampleHeight * 1.3f);
+            rt.anchoredPosition = new Vector2(-16f, -(sampleHeight + 18f));
+        }
+
+        private static string SlotButtonText()
+        {
+            return YummiHarness.Lang.En("Set slot count").ZhCN("设置槽位数目");
         }
 
         private static void Open(UIStationWindow window)
@@ -65,7 +104,7 @@ namespace StationAssistant
                 return;
             }
             int current = station.storage.Length;
-            NumericEditDialog.Show("设置槽位数目", current.ToString(), "1 到 32。减少时先清空被去掉的格子。", InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(SlotButtonText(), current.ToString(), YummiHarness.Lang.En($"Item kinds this station can hold. Current: {current}").ZhCN($"物流塔可容纳的物品数种类，目前为{current}"), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!int.TryParse(text.Trim(), out int count))
                 {
