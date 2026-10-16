@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0
+
+- Reset from BigTower into Station Assistant: configurable slot counts (cap 32), station and control-panel paging, manual slot button, optional double-click values, DSPModSave for slots past 6, and a Treat API.
+
 ## 1.3.0
 
 - **YummiHarness**: patches use `Harness.PatchAll` with `[Guard]` IL fingerprints; partial failures skip only that patch; conflicts and shared hooks reported via YummiHarness main-menu dialog.

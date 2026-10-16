@@ -1,24 +1,33 @@
 using HarmonyLib;
-using UnityEngine;
 
-namespace BigTower
+namespace StationAssistant
 {
-    /// <summary>
-    /// 在总控面板储物栏翻页时吞掉滚轮，避免同时缩放镜头。
-    /// </summary>
     [HarmonyPatch]
-    public static class ControlPanelWheelZoomGuard
+    public static class WheelZoomGuard
     {
         private static bool SuppressZoom()
         {
             try
             {
-                return ControlPanelStoragePaging.CursorOverPagingArea();
+                if (StationWindowPatch.CursorOverPagingArea())
+                {
+                    return true;
+                }
             }
             catch
             {
-                return false;
             }
+            try
+            {
+                if (ControlPanelStoragePaging.CursorOverPagingArea())
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+            return false;
         }
 
         [HarmonyPrefix]

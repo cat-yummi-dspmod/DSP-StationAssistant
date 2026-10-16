@@ -1,13 +1,11 @@
 using System;
 using HarmonyLib;
 
-namespace BigTower
+namespace StationAssistant
 {
     /// <summary>
-    /// 原版运输塔逻辑有多处手写展开到固定格数，这里把它们补到全部格子：
-    /// - needs：原版为 [格0..格4, 翘曲器]；格子多于 5 时改为 [格0..格N-1, 翘曲器]，needs[i] 始终对应 storage[i]。
-    /// - 传送带入塔、分拣器取货只认 needs 前 6 位：原版取不到时，把 needs[6..] 每 6 个一组再试一次。
-    /// - 无人机/运输船卸货（AddItem）只到第 6 格，沙盒保持数量（UpdateKeepMode）只到第 5 格。
+    /// 原版把 needs、入塔、AddItem、KeepMode 和四个供需查询写死在前 6 格。
+    /// 格子不超过 6 时这些补丁直接返回，不额外扫描。
     /// </summary>
     [HarmonyPatch]
     public static class StationLogicPatch
@@ -71,7 +69,6 @@ namespace BigTower
                         anyBack = true;
                     }
                 }
-                // 分拣器在 needs 前 6 位全为 0 时直接空闲，不会去取后面的格子；放一个不对应任何物品的非零值唤醒它。
                 if (!anyFront && anyBack)
                 {
                     needs[0] = -1;
@@ -204,15 +201,14 @@ namespace BigTower
         [YummiHarness.Guard("806f415ada529868")]
         public static void AddItem_Postfix(StationComponent __instance, ref int __result, int itemId, int count, int inc)
         {
-            const int vanillaSlots = 6;
             StationStore[] storage = __instance.storage;
-            if (__result != 0 || itemId <= 0 || storage.Length <= vanillaSlots)
+            if (__result != 0 || itemId <= 0 || storage.Length <= VanillaNeedsLength)
             {
                 return;
             }
             lock (storage)
             {
-                for (int i = vanillaSlots; i < storage.Length; i++)
+                for (int i = VanillaNeedsLength; i < storage.Length; i++)
                 {
                     if (storage[i].itemId == itemId)
                     {
@@ -248,6 +244,65 @@ namespace BigTower
                     }
                 }
             }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.HasLocalSupply))]
+        [YummiHarness.Guard("68234e7bf877386b")]
+        public static bool HasLocalSupply_Prefix(StationComponent __instance, int itemId, int countAtLeast, ref int __result)
+        {
+            return Find(__instance, itemId, countAtLeast, local: true, supply: true, ref __result);
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.HasLocalDemand))]
+        [YummiHarness.Guard("e92c52e15b73611e")]
+        public static bool HasLocalDemand_Prefix(StationComponent __instance, int itemId, int countAtLeast, ref int __result)
+        {
+            return Find(__instance, itemId, countAtLeast, local: true, supply: false, ref __result);
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.HasRemoteSupply))]
+        [YummiHarness.Guard("df30025f5d70ce61")]
+        public static bool HasRemoteSupply_Prefix(StationComponent __instance, int itemId, int countAtLeast, ref int __result)
+        {
+            return Find(__instance, itemId, countAtLeast, local: false, supply: true, ref __result);
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.HasRemoteDemand))]
+        [YummiHarness.Guard("9dfdc98090d92471")]
+        public static bool HasRemoteDemand_Prefix(StationComponent __instance, int itemId, int countAtLeast, ref int __result)
+        {
+            return Find(__instance, itemId, countAtLeast, local: false, supply: false, ref __result);
+        }
+
+        private static bool Find(StationComponent station, int itemId, int countAtLeast, bool local, bool supply, ref int result)
+        {
+            StationStore[] storage = station.storage;
+            if (storage == null || storage.Length <= VanillaNeedsLength)
+            {
+                return true;
+            }
+            result = -1;
+            ELogisticStorage want = supply ? ELogisticStorage.Supply : ELogisticStorage.Demand;
+            for (int i = 0; i < storage.Length; i++)
+            {
+                ELogisticStorage logic = local ? storage[i].localLogic : storage[i].remoteLogic;
+                if (storage[i].itemId != itemId || logic != want)
+                {
+                    continue;
+                }
+                int room = supply ? storage[i].count : storage[i].max - storage[i].count;
+                if (room < countAtLeast)
+                {
+                    continue;
+                }
+                result = i;
+                return false;
+            }
+            return false;
         }
     }
 }

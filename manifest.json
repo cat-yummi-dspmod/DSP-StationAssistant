@@ -1,8 +1,8 @@
 {
-  "name": "BigTower",
-  "description": "More station slots (max 8/9, safe 6), kept after uninstall. | 运输塔扩容（max 8/9，safe 6），卸载mod后依旧保留6格",
-  "version_number": "1.3.0",
-  "website_url": "https://github.com/cat-yummi-dspmod/DSP-BigTower",
+  "name": "StationAssistant",
+  "description": "未完成测试的 mod",
+  "version_number": "0.1.0",
+  "website_url": "https://github.com/cat-yummi-dspmod/DSP-StationAssistant",
   "dependencies": [
     "xiaoye97-BepInEx-5.4.17",
     "cat_yummi-YummiHarness-0.2.0"

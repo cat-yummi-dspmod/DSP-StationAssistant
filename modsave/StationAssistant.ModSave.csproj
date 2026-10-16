@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<AssemblyName>StationAssistant.ModSave</AssemblyName>
+		<RootNamespace>StationAssistant.ModSave</RootNamespace>
+		<LangVersion>latest</LangVersion>
+		<Version>0.1.0</Version>
+		<RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="BepInEx.Core" Version="5.4.17" />
+		<ProjectReference Include="..\StationAssistant.csproj" Private="false" />
+		<Reference Include="DSPModSave">
+			<HintPath>$(APPDATA)\r2modmanPlus-local\DysonSphereProgram\profiles\YummiHarness\BepInEx\plugins\CommonAPI-DSPModSave\DSPModSave.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+</Project>

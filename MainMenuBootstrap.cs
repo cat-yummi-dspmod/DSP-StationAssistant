@@ -3,7 +3,7 @@ using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 
-namespace BigTower
+namespace StationAssistant
 {
     [HarmonyPatch]
     internal static class MainMenuBootstrap
@@ -54,7 +54,7 @@ namespace BigTower
         }
     }
 
-    internal static class BigTowerPlugin
+    internal static class FeatureStartup
     {
         private static bool featuresEnabled;
 
@@ -65,7 +65,7 @@ namespace BigTower
                 return;
             }
             featuresEnabled = true;
-            BigTower.Instance.ApplyPatchesAndConfig();
+            Plugin.Instance.ApplyPatches();
         }
     }
 }

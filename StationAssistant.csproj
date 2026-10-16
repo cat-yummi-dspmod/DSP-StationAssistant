@@ -1,12 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 		<OutputType>Library</OutputType>
-		<RootNamespace>BigTower</RootNamespace>
-		<AssemblyName>BigTower</AssemblyName>
+		<RootNamespace>StationAssistant</RootNamespace>
+		<AssemblyName>StationAssistant</AssemblyName>
 		<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
 		<TargetFramework>net472</TargetFramework>
 		<FileAlignment>512</FileAlignment>
@@ -14,10 +14,10 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<PackageId>BigTower</PackageId>
-		<BepInExPluginGuid>com.yummi.dsp.bigtower</BepInExPluginGuid>
-		<Description>More station slots (max 8/9, safe 6), kept after uninstall. | 运输塔扩容（max 8/9，safe 6），卸载mod后依旧保留6格</Description>
-		<Version>1.3.0</Version>
+		<PackageId>StationAssistant</PackageId>
+		<BepInExPluginGuid>com.yummi.dsp.stationassistant</BepInExPluginGuid>
+		<Description>未完成测试的 mod</Description>
+		<Version>0.1.0</Version>
 		<Authors>cat-yummi</Authors>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
@@ -29,18 +29,19 @@
 		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Remove="modsave/**" />
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="BepInEx.Core" Version="5.4.17" />
 		<PackageReference Include="BepInEx.PluginInfoProps" Version="1.0.0" />
 		<PackageReference Include="UnityEngine.Modules" Version="2022.3.53" IncludeAssets="compile" />
 		<PackageReference Include="DysonSphereProgram.GameLibs" Version="*-*" />
-		<!-- 安全注入前置 mod：补丁只在目标方法与原版一致时应用 -->
 		<ProjectReference Include="..\YummiHarness\plugin\YummiHarness.csproj" Private="false" />
 	</ItemGroup>
 	<PropertyGroup>
 		<ProfileDir Condition=" '$(ProfileDir)' == '' ">$(APPDATA)\r2modmanPlus-local\DysonSphereProgram\profiles\Default</ProfileDir>
 		<DeployDir>$(ProfileDir)\BepInEx\plugins\cat_yummi-$(AssemblyName)</DeployDir>
 	</PropertyGroup>
-	<!-- 游戏运行时 dll 被占用会复制失败，只报警告不让编译失败 -->
 	<Target Name="DeployToProfile" AfterTargets="Build" Condition="Exists('$(ProfileDir)')">
 		<Copy SourceFiles="$(TargetPath);icon.png;manifest.json;README.md" DestinationFolder="$(DeployDir)" Retries="0" ContinueOnError="WarnAndContinue" />
 		<Message Importance="high" Text="已部署到 $(DeployDir)" Condition=" '$(MSBuildLastTaskResult)' == 'true' " />
