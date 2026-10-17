@@ -39,7 +39,7 @@
 		<ProjectReference Include="..\YummiHarness\plugin\YummiHarness.csproj" Private="false" />
 	</ItemGroup>
 	<PropertyGroup>
-		<ProfileDir Condition=" '$(ProfileDir)' == '' ">$(APPDATA)\r2modmanPlus-local\DysonSphereProgram\profiles\Default</ProfileDir>
+		<ProfileDir Condition=" '$(ProfileDir)' == '' ">$(APPDATA)\r2modmanPlus-local\DysonSphereProgram\profiles\YummiHarness</ProfileDir>
 		<DeployDir>$(ProfileDir)\BepInEx\plugins\cat_yummi-$(AssemblyName)</DeployDir>
 	</PropertyGroup>
 	<Target Name="DeployToProfile" AfterTargets="Build" Condition="Exists('$(ProfileDir)')">

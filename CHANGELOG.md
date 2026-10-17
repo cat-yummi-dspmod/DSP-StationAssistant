@@ -3,6 +3,7 @@
 ## 0.1.7
 
 - Fix double-click numeric overlays lost after UI refresh (charge power, capacity, etc.).
+- `BreakLimit` now only applies to capacities typed via double-click; other mods calling `SetStationStorage` (e.g. TowerFactory passing `int.MaxValue`) are clamped by vanilla again instead of storing 2147483647.
 - Total control panel paging is fixed at 5 rows per page (6th row pushed the transport info down); PageSize now only affects the logistics tower window. Paging only shows on the Info tab.
 - Tower detection falls back to treating any non-collector station as a tower; planetary towers now resolved via stationPool (planetId is 0).
 

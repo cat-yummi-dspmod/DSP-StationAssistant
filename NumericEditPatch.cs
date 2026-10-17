@@ -9,13 +9,15 @@ namespace StationAssistant
     {
         private static int refreshDepth;
         private static int pendingMax = int.MinValue;
+        // 只有双击输入容量时才破限；其他 mod（如塔厂传 int.MaxValue 期望被原版钳制）不受影响。
+        private static bool userEdit;
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(PlanetTransport), nameof(PlanetTransport.SetStationStorage))]
         [YummiHarness.Guard("1eb74a6188c74249")]
         public static void SetStationStorage_Prefix(int itemCountMax)
         {
-            pendingMax = Settings.BreakLimit ? itemCountMax : int.MinValue;
+            pendingMax = Settings.BreakLimit && userEdit ? itemCountMax : int.MinValue;
         }
 
         [HarmonyPostfix]
@@ -214,7 +216,15 @@ namespace StationAssistant
                     return;
                 }
                 StationStore store = station.storage[index];
-                transport.SetStationStorage(station.id, index, store.itemId, value, store.localLogic, store.remoteLogic, GameMain.mainPlayer);
+                userEdit = true;
+                try
+                {
+                    transport.SetStationStorage(station.id, index, store.itemId, value, store.localLogic, store.remoteLogic, GameMain.mainPlayer);
+                }
+                finally
+                {
+                    userEdit = false;
+                }
             });
         }
 
