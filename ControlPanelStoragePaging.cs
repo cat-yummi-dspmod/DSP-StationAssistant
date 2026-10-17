@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
@@ -17,6 +17,9 @@ namespace StationAssistant
         }
 
         private static readonly ConditionalWeakTable<StationComponent, PageState> states = new ConditionalWeakTable<StationComponent, PageState>();
+        /// <summary>总控面板固定每页 5 行：第 6 行会挤掉下方的物流运输机信息。与 PageSize 配置无关，PageSize 只管物流塔面板。</summary>
+        internal const int ControlPageSize = 5;
+
         private static FieldInfo storageUIsField;
         private static FieldInfo stationField;
         private static FieldInfo factoryField;
@@ -51,7 +54,7 @@ namespace StationAssistant
                 return;
             }
             int count = CountOf(__1);
-            int pageSize = Settings.PageSize;
+            int pageSize = ControlPageSize;
             if (count <= pageSize)
             {
                 return;
@@ -62,6 +65,31 @@ namespace StationAssistant
             {
                 __2 = mapped;
             }
+        }
+
+        // 原版把「物流运输机」分组放在 -144 - storage.Length * (行高 + 6)，槽位多了会被挤出面板。
+        // 分页后最多显示 ControlPageSize 行，所以按显示行数重新摆放。
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(UIControlPanelStationInspector), "OnStationIdChange")]
+        [YummiHarness.Guard("2e0ac06ebe9e0453")]
+        public static void OnStationIdChange_Postfix(UIControlPanelStationInspector __instance)
+        {
+            if (!Settings.ControlScroll || __instance.deliveryGroupRectTransform == null)
+            {
+                return;
+            }
+            StationComponent station = __instance.transport != null && __instance.stationId > 0
+                && __instance.stationId < __instance.transport.stationPool.Length
+                ? __instance.transport.stationPool[__instance.stationId]
+                : null;
+            if (station == null || station.storage == null || station.isCollector || station.isVeinCollector)
+            {
+                return;
+            }
+            int rows = Mathf.Min(station.storage.Length, ControlPageSize);
+            float y = ((RectTransform)__instance.storageUIPrefab.transform).sizeDelta.y;
+            RectTransform group = __instance.deliveryGroupRectTransform;
+            group.anchoredPosition = new Vector2(group.anchoredPosition.x, -144f - rows * (y + 6f));
         }
 
         [HarmonyPostfix]
@@ -89,7 +117,7 @@ namespace StationAssistant
                 return;
             }
             int count = CountOf(station);
-            int pageSize = Settings.PageSize;
+            int pageSize = ControlPageSize;
             int pages = Pages.Count(count, pageSize);
             if (pages <= 1)
             {
@@ -99,6 +127,13 @@ namespace StationAssistant
             }
             lastInspector = __instance;
             lastUis = uis;
+            for (int i = ControlPageSize; i < uis.Length; i++)
+            {
+                if (uis[i] != null && uis[i].gameObject.activeSelf)
+                {
+                    uis[i].gameObject.SetActive(false);
+                }
+            }
             PageState state = StateOf(station);
             if (state.LastStationId != station.id)
             {
@@ -164,14 +199,14 @@ namespace StationAssistant
                 return;
             }
             int count = CountOf(station);
-            int start = Pages.Start(StateOf(station).Page, count, Settings.PageSize);
+            int start = Pages.Start(StateOf(station).Page, count, ControlPageSize);
             for (int i = 0; i < uis.Length; i++)
             {
                 if (uis[i] == null)
                 {
                     continue;
                 }
-                if (start + i < count)
+                if (i < ControlPageSize && start + i < count)
                 {
                     if (!uis[i].gameObject.activeSelf)
                     {
@@ -335,7 +370,7 @@ namespace StationAssistant
                 return;
             }
             PageState state = StateOf(station);
-            int pages = Pages.Count(CountOf(station), Settings.PageSize);
+            int pages = Pages.Count(CountOf(station), ControlPageSize);
             int next = state.Page + delta;
             if (next < 0 || next >= pages || next == state.Page)
             {

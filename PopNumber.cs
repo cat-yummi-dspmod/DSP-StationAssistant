@@ -35,6 +35,9 @@ namespace StationAssistant
             float height = SourceHeight(source);
             ResetRect(inputRt, height);
             PlaceBetweenMessageAndButtons(box, inputRt, height);
+            EscClose esc = field.gameObject.AddComponent<EscClose>();
+            esc.box = box;
+            esc.field = field;
             field.ActivateInputField();
             if (EventSystem.current != null)
             {
@@ -124,43 +127,111 @@ namespace StationAssistant
         {
             RectTransform window = box.m_WindowTrans;
             RectTransform message = box.m_MessageText.rectTransform;
-            const float gap = 2f;
+            const float gap = 8f;
             window.sizeDelta += new Vector2(0f, height + gap);
             Canvas.ForceUpdateCanvases();
-            Vector3[] corners = new Vector3[4];
-            message.GetWorldCorners(corners);
             Text text = box.m_MessageText;
-            // 按文字实际行数（preferredHeight）计算文字底边，而不是文本框底边。
-            float rectHeight = message.rect.height;
-            float textHeight = Mathf.Min(text.preferredHeight, rectHeight > 1f ? rectHeight : text.preferredHeight);
-            float bottomOffset;
-            switch (text.alignment)
+            // 用文字实际渲染出的最底部顶点定位（多行、字体、缩放都自然适配），而不是猜文本框高度。
+            Vector3 bottomLocal;
+            if (!TryGlyphBottom(text, window, out bottomLocal))
             {
-                case TextAnchor.UpperLeft:
-                case TextAnchor.UpperCenter:
-                case TextAnchor.UpperRight:
-                    bottomOffset = rectHeight - textHeight;
-                    break;
-                case TextAnchor.LowerLeft:
-                case TextAnchor.LowerCenter:
-                case TextAnchor.LowerRight:
-                    bottomOffset = 0f;
-                    break;
-                default:
-                    bottomOffset = (rectHeight - textHeight) * 0.5f;
-                    break;
+                Vector3[] corners = new Vector3[4];
+                message.GetWorldCorners(corners);
+                bottomLocal = window.InverseTransformPoint((corners[0] + corners[3]) * 0.5f);
             }
-            Vector3 bottomWorld = (corners[0] + corners[3]) * 0.5f;
-            Vector3 bottomLocal = window.InverseTransformPoint(bottomWorld);
-            float scale = message.lossyScale.y != 0f ? message.lossyScale.y / window.lossyScale.y : 1f;
-            bottomLocal.y += bottomOffset * scale;
             inputRt.SetParent(window, false);
             inputRt.anchorMin = new Vector2(0.5f, 0.5f);
             inputRt.anchorMax = new Vector2(0.5f, 0.5f);
             inputRt.pivot = new Vector2(0.5f, 1f);
             inputRt.sizeDelta = new Vector2(140f, height);
+            Place(inputRt, window, bottomLocal, gap);
+            // 弹窗出现后文字可能还会被重新排版（字体图集、缩放动画），之后几帧持续贴住文字底边。
+            Follow follow = inputRt.gameObject.AddComponent<Follow>();
+            follow.text = text;
+            follow.window = window;
+            follow.gap = gap;
+        }
+
+        private static void Place(RectTransform inputRt, RectTransform window, Vector3 bottomLocal, float gap)
+        {
             float anchorY = (0.5f - window.pivot.y) * window.rect.height;
             inputRt.anchoredPosition = new Vector2(0f, bottomLocal.y - anchorY - gap);
+        }
+
+        /// <summary>输入框聚焦时 Esc 只会让输入框失焦，游戏不会收到，导致要按两次。这里直接当作「取消」。</summary>
+        private sealed class EscClose : MonoBehaviour
+        {
+            internal UIMessageBox box;
+            internal InputField field;
+            private bool wasFocused;
+
+            private void Update()
+            {
+                if (box == null || field == null)
+                {
+                    enabled = false;
+                    return;
+                }
+                if (Input.GetKeyDown(KeyCode.Escape) && (wasFocused || field.isFocused))
+                {
+                    enabled = false;
+                    box.OnButton1Click();
+                    return;
+                }
+                wasFocused = field.isFocused;
+            }
+        }
+
+        private sealed class Follow : MonoBehaviour
+        {
+            internal Text text;
+            internal RectTransform window;
+            internal float gap;
+            private int frames;
+
+            private void LateUpdate()
+            {
+                if (text == null || window == null || frames++ > 30)
+                {
+                    enabled = false;
+                    return;
+                }
+                if (TryGlyphBottom(text, window, out Vector3 bottomLocal))
+                {
+                    Place((RectTransform)transform, window, bottomLocal, gap);
+                }
+            }
+        }
+
+        private static bool TryGlyphBottom(Text text, RectTransform window, out Vector3 bottomLocal)
+        {
+            bottomLocal = Vector3.zero;
+            if (text == null)
+            {
+                return false;
+            }
+            System.Collections.Generic.IList<UIVertex> verts = text.cachedTextGenerator.verts;
+            if (verts == null || verts.Count == 0)
+            {
+                text.Rebuild(CanvasUpdate.PreRender);
+                verts = text.cachedTextGenerator.verts;
+            }
+            if (verts == null || verts.Count == 0)
+            {
+                return false;
+            }
+            float minY = float.MaxValue;
+            for (int i = 0; i < verts.Count; i++)
+            {
+                if (verts[i].position.y < minY)
+                {
+                    minY = verts[i].position.y;
+                }
+            }
+            float unit = text.pixelsPerUnit > 0f ? 1f / text.pixelsPerUnit : 1f;
+            Vector3 world = text.rectTransform.TransformPoint(new Vector3(0f, minY * unit, 0f));
+            bottomLocal = window.InverseTransformPoint(world);
+            return true;
         }
     }
 }

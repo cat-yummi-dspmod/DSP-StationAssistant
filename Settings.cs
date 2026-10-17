@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using YummiHarness;
@@ -85,8 +85,8 @@ namespace StationAssistant
                     "总控面板里物流塔储物栏分页浏览。"));
             pageSize = config.Bind("SlotsScroll", "PageSize", 6,
                 Desc(
-                    "Max storage rows shown per page when scrolling (1–32).",
-                    "分页时每页最多显示的货物栏行数（1–32）。"));
+                    "Max storage rows per page in the logistics tower window only (1–32). The total control panel is fixed at 5.",
+                    "仅物流塔面板分页时每页最多显示的货物栏行数（1–32）。总控面板固定每页 5 行。"));
             changeCapacityUi = config.Bind("Numeric", "ChangeCapacityUI", true,
                 Desc("Double-click item capacity numbers.", "双击物品容量数字。"));
             changePowerUi = config.Bind("Numeric", "ChangePowerUI", true,
