@@ -49,7 +49,11 @@ namespace StationAssistant
             {
                 return;
             }
-            SlotStorage.ExpandIfNeeded(station);
+            if (!SlotStorage.IsTower(station))
+            {
+                return;
+            }
+            SlotStorage.ExpandIfNeeded(station, false);
             int rows = Settings.StationScroll ? Settings.PageSize : station.storage.Length;
             EnsureRows(__instance, rows);
         }
@@ -67,14 +71,17 @@ namespace StationAssistant
         [YummiHarness.Guard("5d8291ee6f5744c2")]
         public static void RefreshTrans_Postfix(UIStationWindow __instance, StationComponent station)
         {
-            if (Settings.StationScroll && station?.storage != null && !station.isCollector && !station.isVeinCollector)
+            if (SlotStorage.IsTower(station) && station.storage != null)
             {
-                int visible = Mathf.Min(Settings.PageSize, station.storage.Length);
-                int extra = station.storage.Length - visible;
-                if (extra > 0)
+                int count = station.storage.Length;
+                int targetVisible = Settings.StationScroll
+                    ? Mathf.Min(Settings.PageSize, count)
+                    : count;
+                int trim = count - targetVisible;
+                if (trim != 0)
                 {
                     Vector2 size = __instance.windowTrans.sizeDelta;
-                    __instance.windowTrans.sizeDelta = new Vector2(size.x, size.y - RowHeight * extra);
+                    __instance.windowTrans.sizeDelta = new Vector2(size.x, size.y - RowHeight * trim);
                 }
             }
             FitToScreen(__instance);
@@ -86,7 +93,7 @@ namespace StationAssistant
         public static void OnUpdate_Postfix(UIStationWindow __instance)
         {
             ManualSlotButton.Ensure(__instance);
-            if (!Settings.StationScroll || __instance.stationId == 0 || __instance.transport == null)
+            if (__instance.stationId == 0 || __instance.transport == null)
             {
                 SetChrome(false);
                 return;
@@ -100,6 +107,11 @@ namespace StationAssistant
             {
                 return;
             }
+            if (!SlotStorage.IsTower(station))
+            {
+                SetChrome(false);
+                return;
+            }
             UIStationStorage[] rows = storageUIsRef(__instance);
             if (rows == null || rows.Length == 0)
             {
@@ -107,6 +119,12 @@ namespace StationAssistant
             }
             lastWindow = __instance;
             int count = station.storage.Length;
+            if (!Settings.StationScroll)
+            {
+                BindStorageRows(station, rows, 0, count);
+                SetChrome(false);
+                return;
+            }
             int pageSize = Settings.PageSize;
             int pages = Pages.Count(count, pageSize);
             if (__instance.stationId != lastStationId)
@@ -128,6 +146,17 @@ namespace StationAssistant
             }
             int start = Pages.Start(page, count, pageSize);
             int visible = Mathf.Min(pageSize, count);
+            BindStorageRows(station, rows, start, visible);
+            EnsureChrome(__instance);
+            SetChrome(pages > 1);
+            if (pages > 1 && pageLabel != null)
+            {
+                pageLabel.text = (page + 1) + "/" + pages;
+            }
+        }
+
+        private static void BindStorageRows(StationComponent station, UIStationStorage[] rows, int start, int visible)
+        {
             for (int i = 0; i < rows.Length; i++)
             {
                 if (rows[i] == null)
@@ -154,12 +183,6 @@ namespace StationAssistant
                     rows[i]._Close();
                     rows[i].gameObject.SetActive(false);
                 }
-            }
-            EnsureChrome(__instance);
-            SetChrome(pages > 1);
-            if (pages > 1 && pageLabel != null)
-            {
-                pageLabel.text = (page + 1) + "/" + pages;
             }
         }
 

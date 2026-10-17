@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,8 +7,6 @@ namespace StationAssistant
     [HarmonyPatch]
     public static class NumericEditPatch
     {
-        private static readonly ConditionalWeakTable<Component, object> hooked = new ConditionalWeakTable<Component, object>();
-        private static readonly object mark = new object();
         private static int refreshDepth;
         private static int pendingMax = int.MinValue;
 
@@ -33,7 +30,7 @@ namespace StationAssistant
             int value = pendingMax;
             pendingMax = int.MinValue;
             StationComponent station = __instance.GetStationComponent(stationId);
-            if (station?.storage == null || storageIdx < 0 || storageIdx >= station.storage.Length)
+            if (!SlotStorage.IsTower(station) || station.storage == null || storageIdx < 0 || storageIdx >= station.storage.Length)
             {
                 return;
             }
@@ -45,7 +42,8 @@ namespace StationAssistant
         [YummiHarness.Guard("957c0ae7be9f0a0b")]
         public static void Storage_OnUpdate(UIStationStorage __instance)
         {
-            if (!Settings.EditCapacity || __instance.station == null || __instance.maxValueText == null)
+            if (!Settings.ChangeCapacityUI || __instance.station == null || __instance.maxValueText == null
+                || !SlotStorage.IsTower(__instance.station))
             {
                 return;
             }
@@ -57,7 +55,8 @@ namespace StationAssistant
         [YummiHarness.Guard("5fb4930620470ae4")]
         public static void PanelStorage_OnUpdate(UIControlPanelStationStorage __instance)
         {
-            if (!Settings.EditCapacity || !__instance.isStationDataValid || __instance.maxValueText == null)
+            if (!Settings.ChangeCapacityUI || !__instance.isStationDataValid || __instance.maxValueText == null
+                || !SlotStorage.IsTower(__instance.station))
             {
                 return;
             }
@@ -69,7 +68,7 @@ namespace StationAssistant
         [YummiHarness.Guard("94abf08893f0dfc3")]
         public static void Refresh_Prefix()
         {
-            if (Settings.EditCapacity)
+            if (Settings.ChangeCapacityUI)
             {
                 refreshDepth++;
             }
@@ -80,7 +79,7 @@ namespace StationAssistant
         [YummiHarness.Guard("94abf08893f0dfc3")]
         public static void Refresh_Postfix()
         {
-            if (Settings.EditCapacity)
+            if (Settings.ChangeCapacityUI)
             {
                 refreshDepth--;
             }
@@ -91,7 +90,7 @@ namespace StationAssistant
         [YummiHarness.Guard("dd4005879a70d9e4")]
         public static void PanelRefresh_Prefix()
         {
-            if (Settings.EditCapacity)
+            if (Settings.ChangeCapacityUI)
             {
                 refreshDepth++;
             }
@@ -102,7 +101,7 @@ namespace StationAssistant
         [YummiHarness.Guard("dd4005879a70d9e4")]
         public static void PanelRefresh_Postfix()
         {
-            if (Settings.EditCapacity)
+            if (Settings.ChangeCapacityUI)
             {
                 refreshDepth--;
             }
@@ -113,7 +112,7 @@ namespace StationAssistant
         [YummiHarness.Guard("a168bac3333c06e9")]
         public static bool Slider_Prefix()
         {
-            return !Settings.EditCapacity || refreshDepth <= 0;
+            return !Settings.ChangeCapacityUI || refreshDepth <= 0;
         }
 
         [HarmonyPrefix]
@@ -121,7 +120,7 @@ namespace StationAssistant
         [YummiHarness.Guard("7aa31034fac15357")]
         public static bool PanelSlider_Prefix()
         {
-            return !Settings.EditCapacity || refreshDepth <= 0;
+            return !Settings.ChangeCapacityUI || refreshDepth <= 0;
         }
 
         [HarmonyPostfix]
@@ -138,15 +137,15 @@ namespace StationAssistant
             {
                 return;
             }
-            if (Settings.EditPower && __instance.maxChargePowerValue != null)
+            if (Settings.ChangePowerUI && __instance.maxChargePowerValue != null)
             {
-                Attach(__instance, __instance.maxChargePowerValue, () => EditPower(__instance.factory, station, __instance.maxChargePowerSlider));
+                Attach(__instance, __instance.maxChargePowerValue, () => EditPower(__instance.factory, station, __instance.maxChargePowerSlider, __instance.maxChargePowerValue));
             }
-            if (Settings.EditMiner && __instance.maxMiningSpeedValue != null)
+            if (Settings.ChangeMinerSpeedUI && __instance.maxMiningSpeedValue != null)
             {
                 Attach(__instance.maxMiningSpeedValue, __instance.maxMiningSpeedValue, () => EditMiner(__instance.factory, station, __instance.maxMiningSpeedSlider, __instance.maxMiningSpeedValue));
             }
-            if (Settings.EditEnergyMax && __instance.energyText != null)
+            if (Settings.ChangeEnergyMaxUI && __instance.energyText != null)
             {
                 Attach(__instance.energyText, __instance.energyText, () => EditEnergy(station));
             }
@@ -166,11 +165,11 @@ namespace StationAssistant
             {
                 return;
             }
-            if (Settings.EditPower && __instance.maxChargePowerValue != null)
+            if (Settings.ChangePowerUI && __instance.maxChargePowerValue != null)
             {
-                Attach(__instance, __instance.maxChargePowerValue, () => EditPower(__instance.factory, station, __instance.maxChargePowerSlider));
+                Attach(__instance, __instance.maxChargePowerValue, () => EditPower(__instance.factory, station, __instance.maxChargePowerSlider, __instance.maxChargePowerValue));
             }
-            if (Settings.EditMiner && __instance.maxMiningSpeedValue != null)
+            if (Settings.ChangeMinerSpeedUI && __instance.maxMiningSpeedValue != null)
             {
                 Attach(__instance.maxMiningSpeedValue, __instance.maxMiningSpeedValue, () => EditMiner(__instance.factory, station, __instance.maxMiningSpeedSlider, __instance.maxMiningSpeedValue));
             }
@@ -181,7 +180,7 @@ namespace StationAssistant
         [YummiHarness.Guard("58681ea0364989f7")]
         public static void Miner_OnUpdate(UIMinerWindow __instance)
         {
-            if (!Settings.EditMiner || __instance.minerId == 0 || __instance.factory == null || __instance.speedText == null)
+            if (!Settings.ChangeMinerSpeedUI || __instance.minerId == 0 || __instance.factory == null || __instance.speedText == null)
             {
                 return;
             }
@@ -203,7 +202,7 @@ namespace StationAssistant
 
         private static void EditCapacity(StationComponent station, int index, PlanetTransport transport)
         {
-            if (station == null || index < 0 || index >= station.storage.Length)
+            if (!SlotStorage.IsTower(station) || index < 0 || index >= station.storage.Length)
             {
                 return;
             }
@@ -219,7 +218,7 @@ namespace StationAssistant
             });
         }
 
-        private static void EditPower(PlanetFactory factory, StationComponent station, Slider slider)
+        private static void EditPower(PlanetFactory factory, StationComponent station, Slider slider, Text label)
         {
             if (factory == null || station.pcId <= 0)
             {
@@ -246,6 +245,10 @@ namespace StationAssistant
                     }
                 }
                 factory.powerSystem.consumerPool[station.pcId].workEnergyPerTick = value;
+                if (label != null)
+                {
+                    label.text = FormatChargePowerLabel(value);
+                }
                 if (slider != null)
                 {
                     float shown = (float)(value / 50000.0);
@@ -276,6 +279,14 @@ namespace StationAssistant
                 if (label != null)
                 {
                     label.text = (miner.speed / 100f).ToString("0") + " %";
+                }
+                if (slider != null)
+                {
+                    float shown = (miner.speed - 10000) / 1000f;
+                    if (shown >= slider.minValue && shown <= slider.maxValue)
+                    {
+                        slider.SetValueWithoutNotify(shown);
+                    }
                 }
             });
         }
@@ -311,6 +322,14 @@ namespace StationAssistant
             });
         }
 
+        private static string FormatChargePowerLabel(long workEnergyPerTick)
+        {
+            // Same template as UIStationWindow.powerServedSB — WriteKMG writes backward from lastIndex.
+            System.Text.StringBuilder sb = new System.Text.StringBuilder("         W", 12);
+            StringBuilderUtility.WriteKMG(sb, 8, workEnergyPerTick * 60, true);
+            return sb.ToString();
+        }
+
         private static string FieldValue(string variable, string unitZh, string unitEn, long current)
         {
             return YummiHarness.Lang.En($"In-game variable: {variable}\nUnit: {unitEn}\nCurrent value: {current}")
@@ -319,21 +338,14 @@ namespace StationAssistant
 
         private static void Attach(Component owner, Text label, System.Action action)
         {
-            if (label == null || hooked.TryGetValue(label, out _))
+            if (label == null)
             {
                 return;
             }
-            if (owner != label)
-            {
-                hooked.Add(label, mark);
-            }
-            else if (hooked.TryGetValue(owner, out _))
+            // UI refresh can destroy the overlay; only skip when the child still exists.
+            if (label.transform.Find("station-assistant-dbl") != null)
             {
                 return;
-            }
-            else
-            {
-                hooked.Add(owner, mark);
             }
             GameObject go = new GameObject("station-assistant-dbl", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(label.transform, false);

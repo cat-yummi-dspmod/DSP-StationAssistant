@@ -13,9 +13,12 @@ namespace StationAssistant
             }
             Transform existing = window.windowTrans.Find("station-assistant-set-slots");
             bool tower = false;
+            int slotCount = 0;
             if (window.transport != null && window.stationId > 0 && window.stationId < window.transport.stationPool.Length)
             {
-                tower = SlotStorage.IsTower(window.transport.stationPool[window.stationId]);
+                StationComponent current = window.transport.stationPool[window.stationId];
+                tower = SlotStorage.IsTower(current);
+                slotCount = tower ? current.storage.Length : 0;
             }
             if (!Settings.ManualSlotButton || !tower)
             {
@@ -32,7 +35,7 @@ namespace StationAssistant
                 Text label = existing.GetComponentInChildren<Text>();
                 if (label != null)
                 {
-                    label.text = SlotButtonText();
+                    label.text = SlotButtonText(slotCount);
                     label.color = Color.white;
                 }
                 return;
@@ -69,7 +72,7 @@ namespace StationAssistant
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.white;
             text.raycastTarget = false;
-            text.text = SlotButtonText();
+            text.text = SlotButtonText(slotCount);
             ApplyLayout((RectTransform)go.transform, window);
         }
 
@@ -87,7 +90,12 @@ namespace StationAssistant
             rt.anchoredPosition = new Vector2(-16f, -(sampleHeight + 18f));
         }
 
-        private static string SlotButtonText()
+        private static string SlotButtonText(int count)
+        {
+            return YummiHarness.Lang.En("Slots: " + count).ZhCN("槽位数目 : " + count);
+        }
+
+        private static string DialogTitle()
         {
             return YummiHarness.Lang.En("Set slot count").ZhCN("设置槽位数目");
         }
@@ -104,7 +112,7 @@ namespace StationAssistant
                 return;
             }
             int current = station.storage.Length;
-            PopNumber.Show(SlotButtonText(), current.ToString(), YummiHarness.Lang.En($"Item kinds this station can hold. Current: {current}").ZhCN($"物流塔可容纳的物品数种类，目前为{current}"), InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(DialogTitle(), current.ToString(), YummiHarness.Lang.En($"Item kinds this station can hold. Current: {current}").ZhCN($"物流塔可容纳的物品数种类，目前为{current}"), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!int.TryParse(text.Trim(), out int count))
                 {

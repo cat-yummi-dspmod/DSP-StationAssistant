@@ -16,8 +16,8 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<PackageId>StationAssistant</PackageId>
 		<BepInExPluginGuid>com.yummi.dsp.stationassistant</BepInExPluginGuid>
-		<Description>未完成测试的 mod</Description>
-		<Version>0.1.0</Version>
+		<Description>Logistics station slots, paging and double-click numeric editing.</Description>
+		<Version>0.1.7</Version>
 		<Authors>cat-yummi</Authors>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>

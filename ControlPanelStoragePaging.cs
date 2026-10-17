@@ -74,6 +74,13 @@ namespace StationAssistant
                 Hide();
                 return;
             }
+            if (__instance.currentTabPanel != EUIControlPanelStationPanel.Info)
+            {
+                // 只有「信息」页显示货物栏，其他页不需要翻页。
+                lastInspector = null;
+                Hide();
+                return;
+            }
             StationComponent station = stationField.GetValue(__instance) as StationComponent;
             UIControlPanelStationStorage[] uis = storageUIsField.GetValue(__instance) as UIControlPanelStationStorage[];
             if (station == null || uis == null || uis.Length == 0)
@@ -271,9 +278,16 @@ namespace StationAssistant
             GameObject go = new GameObject("label", typeof(RectTransform), typeof(Text));
             go.transform.SetParent(parent, false);
             RectTransform rt = (RectTransform)go.transform;
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
             rt.sizeDelta = new Vector2(60f, 22f);
+            rt.anchoredPosition = new Vector2(0f, -(rightRt.sizeDelta.y * 2f));
             Text text = go.GetComponent<Text>();
-            text.font = font;
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.text = "1/1";
+            text.font = font != null ? font : Resources.GetBuiltinResource<Font>("Arial.ttf");
             text.fontSize = Mathf.CeilToInt(14f * 1.3f);
             text.alignment = TextAnchor.MiddleCenter;
             text.color = new Color(0.75f, 0.88f, 1f, 0.95f);
@@ -297,9 +311,11 @@ namespace StationAssistant
             tr.offsetMin = Vector2.zero;
             tr.offsetMax = Vector2.zero;
             Text text = textGo.GetComponent<Text>();
-            text.font = font;
+            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
             text.fontSize = 14;
             text.alignment = TextAnchor.MiddleCenter;
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
             text.color = Color.white;
             text.raycastTarget = false;
             text.text = left ? "<" : ">";

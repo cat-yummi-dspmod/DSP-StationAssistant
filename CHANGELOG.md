@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.1.7
+
+- Fix double-click numeric overlays lost after UI refresh (charge power, capacity, etc.).
+
+## 0.1.6
+
+- Fix crash after confirming charge-power edit: `WriteKMG` needs the vanilla `"         W"` string builder template.
+
+## 0.1.5
+
+- Fix station UI: when `StationPanelScroll` is off, show every slot row (no crop to `PageSize`); reverts incorrect tie to control-panel scroll.
+
+## 0.1.4
+
+- (Superseded) Incorrectly coupled station paging to control-panel scroll.
+
+## 0.1.3
+
+- `Treat.ExpandOnBuild` / `Treat.ExpandOnOpen`; startup prunes obsolete cfg keys via `Harness.PruneConfigKeys`.
+
+## 0.1.2
+
+- Thunderstore icon updated (interstellar logistics station).
+- Slot features keyed off entity `modelIndex` (vanilla PLS/ILS model ranges), not `entity.protoId`.
+
+## 0.1.1
+
+- Native numeric dialog (`PopNumber`), slot button shows current count; paging layout fixes.
+- `ExpandOnBuild` / `ExpandOnOpen`; collectors and vein collectors excluded from slot/paging/capacity features.
+- Numeric options renamed to `Change*UI`; `BreakLimit` and `ChangeEnergyMaxUI` default off.
+- Drop “unfinished” wording; Thunderstore build script fixed.
+
 ## 0.1.0
 
 - Reset from BigTower into Station Assistant: configurable slot counts (cap 32), station and control-panel paging, manual slot button, optional double-click values, DSPModSave for slots past 6, and a Treat API.

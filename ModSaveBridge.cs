@@ -32,6 +32,7 @@ namespace StationAssistant
         private sealed class Held
         {
             public StationComponent Station;
+            public int PlanetId;
             public StationStore[] Storage;
             public StationPriorityLock[] Locks;
             public TailSlot[] Tail;
@@ -65,7 +66,7 @@ namespace StationAssistant
                 {
                     continue;
                 }
-                writer.Write(item.Station.planetId);
+                writer.Write(item.PlanetId);
                 writer.Write(item.Station.id);
                 writer.Write(item.Station.entityId);
                 writer.Write(item.Tail.Length);
@@ -217,6 +218,7 @@ namespace StationAssistant
                     held.Add(new Held
                     {
                         Station = station,
+                        PlanetId = factory.planetId,
                         Storage = station.storage,
                         Locks = station.priorityLocks,
                         Tail = tail

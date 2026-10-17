@@ -45,20 +45,30 @@ namespace StationAssistant
         private static InputField NumberField()
         {
             UIGame game = UIRoot.instance != null ? UIRoot.instance.uiGame : null;
-            if (game == null || game.dysonEditor == null || game.dysonEditor.controlPanel == null)
+            if (game != null && game.dysonEditor != null && game.dysonEditor.controlPanel != null)
             {
-                return null;
+                UIDEInspector inspector = game.dysonEditor.controlPanel.inspector;
+                if (inspector != null && inspector.layerInfo != null && inspector.layerInfo.input0 != null)
+                {
+                    return inspector.layerInfo.input0;
+                }
             }
-            UIDEInspector inspector = game.dysonEditor.controlPanel.inspector;
-            if (inspector == null || inspector.layerInfo == null)
+            // 重新进入游戏后戴森球编辑器可能尚未就绪：退而求其次，用物流站面板的名称输入框作样板。
+            if (game != null && game.stationWindow != null && game.stationWindow.nameInput != null)
             {
-                return null;
+                return game.stationWindow.nameInput;
             }
-            return inspector.layerInfo.input0;
+            Plugin.Log?.LogWarning("PopNumber：找不到可复制的输入框样板，双击编辑无法弹出。");
+            return null;
         }
 
         private static void Prepare(InputField field, InputField.ContentType content, string initial)
         {
+            UIInputField uiInput = field.GetComponent<UIInputField>();
+            if (uiInput != null)
+            {
+                UnityEngine.Object.DestroyImmediate(uiInput);
+            }
             UIButton button = field.GetComponent<UIButton>();
             if (button != null)
             {
@@ -114,12 +124,36 @@ namespace StationAssistant
         {
             RectTransform window = box.m_WindowTrans;
             RectTransform message = box.m_MessageText.rectTransform;
-            const float gap = 10f;
+            const float gap = 2f;
             window.sizeDelta += new Vector2(0f, height + gap);
             Canvas.ForceUpdateCanvases();
             Vector3[] corners = new Vector3[4];
             message.GetWorldCorners(corners);
-            Vector3 bottomLocal = window.InverseTransformPoint((corners[0] + corners[3]) * 0.5f);
+            Text text = box.m_MessageText;
+            // 按文字实际行数（preferredHeight）计算文字底边，而不是文本框底边。
+            float rectHeight = message.rect.height;
+            float textHeight = Mathf.Min(text.preferredHeight, rectHeight > 1f ? rectHeight : text.preferredHeight);
+            float bottomOffset;
+            switch (text.alignment)
+            {
+                case TextAnchor.UpperLeft:
+                case TextAnchor.UpperCenter:
+                case TextAnchor.UpperRight:
+                    bottomOffset = rectHeight - textHeight;
+                    break;
+                case TextAnchor.LowerLeft:
+                case TextAnchor.LowerCenter:
+                case TextAnchor.LowerRight:
+                    bottomOffset = 0f;
+                    break;
+                default:
+                    bottomOffset = (rectHeight - textHeight) * 0.5f;
+                    break;
+            }
+            Vector3 bottomWorld = (corners[0] + corners[3]) * 0.5f;
+            Vector3 bottomLocal = window.InverseTransformPoint(bottomWorld);
+            float scale = message.lossyScale.y != 0f ? message.lossyScale.y / window.lossyScale.y : 1f;
+            bottomLocal.y += bottomOffset * scale;
             inputRt.SetParent(window, false);
             inputRt.anchorMin = new Vector2(0.5f, 0.5f);
             inputRt.anchorMax = new Vector2(0.5f, 0.5f);
