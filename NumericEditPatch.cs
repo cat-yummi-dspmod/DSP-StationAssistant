@@ -32,7 +32,7 @@ namespace StationAssistant
             int value = pendingMax;
             pendingMax = int.MinValue;
             StationComponent station = __instance.GetStationComponent(stationId);
-            if (!SlotStorage.IsTower(station) || station.storage == null || storageIdx < 0 || storageIdx >= station.storage.Length)
+            if (station == null || station.storage == null || storageIdx < 0 || storageIdx >= station.storage.Length)
             {
                 return;
             }
@@ -44,8 +44,7 @@ namespace StationAssistant
         [YummiHarness.Guard("957c0ae7be9f0a0b")]
         public static void Storage_OnUpdate(UIStationStorage __instance)
         {
-            if (!Settings.ChangeCapacityUI || __instance.station == null || __instance.maxValueText == null
-                || !SlotStorage.IsTower(__instance.station))
+            if (!Settings.ChangeCapacityUI || __instance.station == null || __instance.maxValueText == null)
             {
                 return;
             }
@@ -58,7 +57,7 @@ namespace StationAssistant
         public static void PanelStorage_OnUpdate(UIControlPanelStationStorage __instance)
         {
             if (!Settings.ChangeCapacityUI || !__instance.isStationDataValid || __instance.maxValueText == null
-                || !SlotStorage.IsTower(__instance.station))
+                || __instance.station == null)
             {
                 return;
             }
@@ -139,18 +138,50 @@ namespace StationAssistant
             {
                 return;
             }
+            // 覆盖层每个窗口只建一次，回调里必须重新取当前站，不能捕获建层时的 station。
             if (Settings.ChangePowerUI && __instance.maxChargePowerValue != null)
             {
-                Attach(__instance, __instance.maxChargePowerValue, () => EditPower(__instance.factory, station, __instance.maxChargePowerSlider, __instance.maxChargePowerValue));
+                Attach(__instance, __instance.maxChargePowerValue, () =>
+                {
+                    StationComponent s = Current(__instance.transport, __instance.stationId);
+                    if (s != null)
+                    {
+                        EditPower(__instance.factory, s, __instance.maxChargePowerSlider, __instance.maxChargePowerValue);
+                    }
+                });
             }
             if (Settings.ChangeMinerSpeedUI && __instance.maxMiningSpeedValue != null)
             {
-                Attach(__instance.maxMiningSpeedValue, __instance.maxMiningSpeedValue, () => EditMiner(__instance.factory, station, __instance.maxMiningSpeedSlider, __instance.maxMiningSpeedValue));
+                Attach(__instance.maxMiningSpeedValue, __instance.maxMiningSpeedValue, () =>
+                {
+                    StationComponent s = Current(__instance.transport, __instance.stationId);
+                    if (s != null)
+                    {
+                        EditMiner(__instance.factory, s, __instance.maxMiningSpeedSlider, __instance.maxMiningSpeedValue);
+                    }
+                });
             }
             if (Settings.ChangeEnergyMaxUI && __instance.energyText != null)
             {
-                Attach(__instance.energyText, __instance.energyText, () => EditEnergy(station));
+                Attach(__instance.energyText, __instance.energyText, () =>
+                {
+                    StationComponent s = Current(__instance.transport, __instance.stationId);
+                    if (s != null)
+                    {
+                        EditEnergy(s);
+                    }
+                });
             }
+        }
+
+        private static StationComponent Current(PlanetTransport transport, int stationId)
+        {
+            if (transport == null || stationId <= 0 || stationId >= transport.stationPool.Length)
+            {
+                return null;
+            }
+            StationComponent s = transport.stationPool[stationId];
+            return s != null && s.id == stationId ? s : null;
         }
 
         [HarmonyPostfix]
@@ -169,11 +200,25 @@ namespace StationAssistant
             }
             if (Settings.ChangePowerUI && __instance.maxChargePowerValue != null)
             {
-                Attach(__instance, __instance.maxChargePowerValue, () => EditPower(__instance.factory, station, __instance.maxChargePowerSlider, __instance.maxChargePowerValue));
+                Attach(__instance, __instance.maxChargePowerValue, () =>
+                {
+                    StationComponent s = Current(__instance.transport, __instance.stationId);
+                    if (s != null)
+                    {
+                        EditPower(__instance.factory, s, __instance.maxChargePowerSlider, __instance.maxChargePowerValue);
+                    }
+                });
             }
             if (Settings.ChangeMinerSpeedUI && __instance.maxMiningSpeedValue != null)
             {
-                Attach(__instance.maxMiningSpeedValue, __instance.maxMiningSpeedValue, () => EditMiner(__instance.factory, station, __instance.maxMiningSpeedSlider, __instance.maxMiningSpeedValue));
+                Attach(__instance.maxMiningSpeedValue, __instance.maxMiningSpeedValue, () =>
+                {
+                    StationComponent s = Current(__instance.transport, __instance.stationId);
+                    if (s != null)
+                    {
+                        EditMiner(__instance.factory, s, __instance.maxMiningSpeedSlider, __instance.maxMiningSpeedValue);
+                    }
+                });
             }
         }
 
@@ -204,7 +249,7 @@ namespace StationAssistant
 
         private static void EditCapacity(StationComponent station, int index, PlanetTransport transport)
         {
-            if (!SlotStorage.IsTower(station) || index < 0 || index >= station.storage.Length)
+            if (station == null || station.storage == null || index < 0 || index >= station.storage.Length)
             {
                 return;
             }
@@ -230,7 +275,7 @@ namespace StationAssistant
 
         private static void EditPower(PlanetFactory factory, StationComponent station, Slider slider, Text label)
         {
-            if (factory == null || station.pcId <= 0)
+            if (factory == null || station.pcId <= 0 || station.pcId >= factory.powerSystem.consumerCursor)
             {
                 return;
             }

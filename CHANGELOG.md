@@ -1,4 +1,9 @@
-﻿# Changelog
+# Changelog
+
+## 0.1.8
+
+- Fix charge power / mining speed / energyMax double-click editing the wrong station after switching targets (overlay callbacks now resolve the current station each click).
+- Restore double-click item capacity on orbital collectors and advanced miners; slot-count features remain logistics-tower only.
 
 ## 0.1.7
 

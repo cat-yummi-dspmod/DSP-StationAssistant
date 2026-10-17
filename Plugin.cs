@@ -11,7 +11,7 @@ namespace StationAssistant
     {
         public const string PluginGuid = "com.yummi.dsp.stationassistant";
         public const string PluginName = "Station Assistant";
-        public const string PluginVersion = "0.1.7";
+        public const string PluginVersion = "0.1.8";
 
         private static readonly Harmony harmony = new Harmony(PluginGuid);
         private static readonly YummiHarness.PatchOptions HarnessOptions = new YummiHarness.PatchOptions { ModName = PluginName };

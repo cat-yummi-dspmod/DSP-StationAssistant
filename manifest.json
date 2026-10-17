@@ -1,7 +1,7 @@
 {
   "name": "StationAssistant",
   "description": "Logistics station slots, paging and double-click numeric editing. 物流塔槽位、翻页与双击数值修改。",
-  "version_number": "0.1.7",
+  "version_number": "0.1.8",
   "website_url": "https://github.com/cat-yummi-dspmod/DSP-StationAssistant",
   "dependencies": [
     "xiaoye97-BepInEx-5.4.17",
