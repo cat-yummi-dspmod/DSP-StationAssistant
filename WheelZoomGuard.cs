@@ -32,7 +32,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(VFInput), "get__cameraZoomIn")]
-        [YummiHarness.Guard("7af092698a0fcc7e")]
+        [CatAPI.Guard("7af092698a0fcc7e")]
         public static bool ZoomIn_Prefix(ref float __result)
         {
             if (!SuppressZoom())
@@ -45,7 +45,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(VFInput), "get__cameraZoomOut")]
-        [YummiHarness.Guard("4f5adcab95ca0a54")]
+        [CatAPI.Guard("4f5adcab95ca0a54")]
         public static bool ZoomOut_Prefix(ref float __result)
         {
             if (!SuppressZoom())

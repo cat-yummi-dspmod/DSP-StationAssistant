@@ -17,7 +17,7 @@
 		<PackageId>StationAssistant</PackageId>
 		<BepInExPluginGuid>com.yummi.dsp.stationassistant</BepInExPluginGuid>
 		<Description>Logistics station slots, paging and double-click numeric editing.</Description>
-		<Version>0.1.7</Version>
+		<Version>0.1.9</Version>
 		<Authors>cat-yummi</Authors>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
@@ -36,10 +36,10 @@
 		<PackageReference Include="BepInEx.PluginInfoProps" Version="1.0.0" />
 		<PackageReference Include="UnityEngine.Modules" Version="2022.3.53" IncludeAssets="compile" />
 		<PackageReference Include="DysonSphereProgram.GameLibs" Version="*-*" />
-		<ProjectReference Include="..\YummiHarness\plugin\YummiHarness.csproj" Private="false" />
+		<ProjectReference Include="..\CatAPI\plugin\CatAPI.csproj" Private="false" />
 	</ItemGroup>
 	<PropertyGroup>
-		<ProfileDir Condition=" '$(ProfileDir)' == '' ">$(APPDATA)\r2modmanPlus-local\DysonSphereProgram\profiles\YummiHarness</ProfileDir>
+		<ProfileDir Condition=" '$(ProfileDir)' == '' ">$(APPDATA)\r2modmanPlus-local\DysonSphereProgram\profiles\CatAPI</ProfileDir>
 		<DeployDir>$(ProfileDir)\BepInEx\plugins\cat_yummi-$(AssemblyName)</DeployDir>
 	</PropertyGroup>
 	<Target Name="DeployToProfile" AfterTargets="Build" Condition="Exists('$(ProfileDir)')">

@@ -134,7 +134,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GameSave), "SaveCurrentGame")]
-        [YummiHarness.Guard("642a7f58031c1335")]
+        [CatAPI.Guard("642a7f58031c1335")]
         public static void SaveCurrentGame_Prefix()
         {
             Shrink();
@@ -143,7 +143,7 @@ namespace StationAssistant
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameSave), "SaveCurrentGame")]
         [HarmonyPriority(Priority.Last)]
-        [YummiHarness.Guard("642a7f58031c1335")]
+        [CatAPI.Guard("642a7f58031c1335")]
         public static void SaveCurrentGame_Postfix()
         {
             RestoreLive();
@@ -151,7 +151,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GameSave), "AutoSave")]
-        [YummiHarness.Guard("1b2c479f0b09b60d")]
+        [CatAPI.Guard("1b2c479f0b09b60d")]
         public static void AutoSave_Prefix()
         {
             Shrink();
@@ -160,7 +160,7 @@ namespace StationAssistant
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameSave), "AutoSave")]
         [HarmonyPriority(Priority.Last)]
-        [YummiHarness.Guard("1b2c479f0b09b60d")]
+        [CatAPI.Guard("1b2c479f0b09b60d")]
         public static void AutoSave_Postfix()
         {
             RestoreLive();

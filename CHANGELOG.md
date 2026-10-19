@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.9 - 2026-10-19
+
+- Thunderstore dependency updated to **cat_yummi-CatAPI-0.2.4** (renamed from YummiHarness). No gameplay change.
+
 ## 0.1.8
 
 - Fix charge power / mining speed / energyMax double-click editing the wrong station after switching targets (overlay callbacks now resolve the current station each click).
@@ -46,8 +50,8 @@
 
 ## 1.3.0
 
-- **YummiHarness**: patches use `Harness.PatchAll` with `[Guard]` IL fingerprints; partial failures skip only that patch; conflicts and shared hooks reported via YummiHarness main-menu dialog.
-- Thunderstore dependency: `cat_yummi-YummiHarness`.
+- **CatAPI**: patches use `Harness.PatchAll` with `[Guard]` IL fingerprints; partial failures skip only that patch; conflicts and shared hooks reported via CatAPI main-menu dialog.
+- Thunderstore dependency: `cat_yummi-CatAPI`.
 
 ## 1.2.3
 
@@ -85,10 +89,14 @@
 
 # 更新日志
 
+## 0.1.9 - 2026-10-19
+
+- Thunderstore 依赖改为 **cat_yummi-CatAPI-0.2.4**（YummiHarness 更名），无玩法变更。
+
 ## 1.3.0
 
-- **YummiHarness**：补丁经 `Harness.PatchAll` + `[Guard]` 指纹校验；单点失败不影响其余功能；互斥与同函数多 mod 由 YummiHarness 主菜单统一提示。
-- Thunderstore 依赖：`cat_yummi-YummiHarness`。
+- **CatAPI**：补丁经 `Harness.PatchAll` + `[Guard]` 指纹校验；单点失败不影响其余功能；互斥与同函数多 mod 由 CatAPI 主菜单统一提示。
+- Thunderstore 依赖：`cat_yummi-CatAPI`。
 
 ## 1.2.3
 

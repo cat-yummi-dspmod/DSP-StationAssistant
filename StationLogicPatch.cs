@@ -31,7 +31,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.UpdateNeeds))]
-        [YummiHarness.Guard("87833a246c679fc8")]
+        [CatAPI.Guard("87833a246c679fc8")]
         public static void UpdateNeeds_Postfix(StationComponent __instance)
         {
             StationStore[] storage = __instance.storage;
@@ -79,7 +79,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.UpdateInputSlots))]
-        [YummiHarness.Guard("0f49824d6f59bbd9")]
+        [CatAPI.Guard("0f49824d6f59bbd9")]
         public static void UpdateInputSlots_Prefix(StationComponent __instance, out long __state)
         {
             __state = 0L;
@@ -99,7 +99,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.UpdateInputSlots))]
-        [YummiHarness.Guard("0f49824d6f59bbd9")]
+        [CatAPI.Guard("0f49824d6f59bbd9")]
         public static void UpdateInputSlots_Postfix(StationComponent __instance, CargoTraffic traffic, long __state)
         {
             if (__state == 0L)
@@ -148,7 +148,7 @@ namespace StationAssistant
         [HarmonyPatch(typeof(PlanetFactory), nameof(PlanetFactory.PickFrom),
             new[] { typeof(int), typeof(int), typeof(int), typeof(int[]), typeof(byte), typeof(byte) },
             new[] { ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Out })]
-        [YummiHarness.Guard("c5ca122186e845f3")]
+        [CatAPI.Guard("c5ca122186e845f3")]
         public static void PickFrom_Entity_Postfix(PlanetFactory __instance, ref int __result, int entityId, int offset, int filter, int[] needs, ref byte stack, ref byte inc)
         {
             if (__result != 0 || needs == null || needs.Length <= VanillaNeedsLength)
@@ -174,7 +174,7 @@ namespace StationAssistant
         [HarmonyPatch(typeof(PlanetFactory), nameof(PlanetFactory.PickFrom),
             new[] { typeof(uint), typeof(int), typeof(int), typeof(int[]), typeof(byte), typeof(byte) },
             new[] { ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Out })]
-        [YummiHarness.Guard("fc3da46f7f47bcc2")]
+        [CatAPI.Guard("fc3da46f7f47bcc2")]
         public static void PickFrom_Typed_Postfix(PlanetFactory __instance, ref int __result, uint ioTargetTypedId, int offset, int filter, int[] needs, ref byte stack, ref byte inc)
         {
             if (__result != 0 || needs == null || needs.Length <= VanillaNeedsLength)
@@ -198,7 +198,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.AddItem))]
-        [YummiHarness.Guard("806f415ada529868")]
+        [CatAPI.Guard("806f415ada529868")]
         public static void AddItem_Postfix(StationComponent __instance, ref int __result, int itemId, int count, int inc)
         {
             StationStore[] storage = __instance.storage;
@@ -223,7 +223,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.UpdateKeepMode))]
-        [YummiHarness.Guard("368147d80661e649")]
+        [CatAPI.Guard("368147d80661e649")]
         public static void UpdateKeepMode_Postfix(StationComponent __instance)
         {
             const int vanillaSlots = 5;
@@ -248,7 +248,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.HasLocalSupply))]
-        [YummiHarness.Guard("68234e7bf877386b")]
+        [CatAPI.Guard("68234e7bf877386b")]
         public static bool HasLocalSupply_Prefix(StationComponent __instance, int itemId, int countAtLeast, ref int __result)
         {
             return Find(__instance, itemId, countAtLeast, local: true, supply: true, ref __result);
@@ -256,7 +256,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.HasLocalDemand))]
-        [YummiHarness.Guard("e92c52e15b73611e")]
+        [CatAPI.Guard("e92c52e15b73611e")]
         public static bool HasLocalDemand_Prefix(StationComponent __instance, int itemId, int countAtLeast, ref int __result)
         {
             return Find(__instance, itemId, countAtLeast, local: true, supply: false, ref __result);
@@ -264,7 +264,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.HasRemoteSupply))]
-        [YummiHarness.Guard("df30025f5d70ce61")]
+        [CatAPI.Guard("df30025f5d70ce61")]
         public static bool HasRemoteSupply_Prefix(StationComponent __instance, int itemId, int countAtLeast, ref int __result)
         {
             return Find(__instance, itemId, countAtLeast, local: false, supply: true, ref __result);
@@ -272,7 +272,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StationComponent), nameof(StationComponent.HasRemoteDemand))]
-        [YummiHarness.Guard("9dfdc98090d92471")]
+        [CatAPI.Guard("9dfdc98090d92471")]
         public static bool HasRemoteDemand_Prefix(StationComponent __instance, int itemId, int countAtLeast, ref int __result)
         {
             return Find(__instance, itemId, countAtLeast, local: false, supply: false, ref __result);

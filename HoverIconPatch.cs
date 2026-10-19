@@ -11,7 +11,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIEntityBriefInfo), "_OnCreate")]
-        [YummiHarness.Guard("69d3bf097eb80ed0")]
+        [CatAPI.Guard("69d3bf097eb80ed0")]
         public static void OnCreate_Prefix(UIEntityBriefInfo __instance)
         {
             Grow(__instance);
@@ -19,7 +19,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIEntityBriefInfo), "_OnUpdate")]
-        [YummiHarness.Guard("a72ad04c70fde856")]
+        [CatAPI.Guard("a72ad04c70fde856")]
         public static void OnUpdate_Prefix(UIEntityBriefInfo __instance)
         {
             Grow(__instance);

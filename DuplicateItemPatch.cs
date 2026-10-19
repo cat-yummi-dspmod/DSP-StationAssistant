@@ -7,7 +7,7 @@ namespace StationAssistant
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIStationStorage), "OnItemPickerReturn")]
-        [YummiHarness.Guard("503e7f1250016a66")]
+        [CatAPI.Guard("503e7f1250016a66")]
         public static bool Station_Prefix(UIStationStorage __instance, ItemProto itemProto)
         {
             if (!Settings.AllowDuplicate || itemProto == null || __instance.station == null
@@ -37,7 +37,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIControlPanelStationStorage), "OnItemPickerReturn")]
-        [YummiHarness.Guard("aa616b132d594380")]
+        [CatAPI.Guard("aa616b132d594380")]
         public static bool Panel_Prefix(UIControlPanelStationStorage __instance, ItemProto itemProto)
         {
             if (!Settings.AllowDuplicate || itemProto == null || !__instance.isStationDataValid

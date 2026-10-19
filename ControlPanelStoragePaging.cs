@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
@@ -46,7 +46,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIControlPanelStationStorage), "SetData")]
-        [YummiHarness.Guard("61111e7e94b232ee")]
+        [CatAPI.Guard("61111e7e94b232ee")]
         public static void SetData_Prefix(StationComponent __1, ref int __2)
         {
             if (!Settings.ControlScroll || __1 == null)
@@ -71,7 +71,7 @@ namespace StationAssistant
         // 分页后最多显示 ControlPageSize 行，所以按显示行数重新摆放。
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIControlPanelStationInspector), "OnStationIdChange")]
-        [YummiHarness.Guard("2e0ac06ebe9e0453")]
+        [CatAPI.Guard("2e0ac06ebe9e0453")]
         public static void OnStationIdChange_Postfix(UIControlPanelStationInspector __instance)
         {
             if (!Settings.ControlScroll || __instance.deliveryGroupRectTransform == null)
@@ -94,7 +94,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIControlPanelStationInspector), "_OnUpdate")]
-        [YummiHarness.Guard("b89aade680ae7db9")]
+        [CatAPI.Guard("b89aade680ae7db9")]
         public static void OnUpdate_Postfix(UIControlPanelStationInspector __instance)
         {
             if (!Settings.ControlScroll || !EnsureFields())

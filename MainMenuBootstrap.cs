@@ -19,7 +19,7 @@ namespace StationAssistant
         [HarmonyPostfix]
         [HarmonyPatch(typeof(VFPreload), nameof(VFPreload.InvokeOnLoadWorkEnded))]
         [HarmonyPriority(Priority.Last)]
-        [YummiHarness.Guard("4185730b6448e635")]
+        [CatAPI.Guard("4185730b6448e635")]
         public static void InvokeOnLoadWorkEnded_Postfix()
         {
             if (preloadHookFired || host == null)
@@ -33,7 +33,7 @@ namespace StationAssistant
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIRoot), "_OnOpen")]
         [HarmonyPriority(Priority.Last)]
-        [YummiHarness.Guard("05fc7f22583910d4")]
+        [CatAPI.Guard("05fc7f22583910d4")]
         public static void UIRoot_OnOpen_Postfix()
         {
             if (!DSPGame.IsMenuDemo || host == null)

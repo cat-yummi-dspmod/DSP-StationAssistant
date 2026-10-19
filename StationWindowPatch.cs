@@ -37,7 +37,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIStationWindow), "OnStationIdChange")]
-        [YummiHarness.Guard("a94c837d579532f7")]
+        [CatAPI.Guard("a94c837d579532f7")]
         public static void OnStationIdChange_Prefix(UIStationWindow __instance)
         {
             if (!__instance.active || __instance.transport == null || __instance.stationId <= 0)
@@ -60,7 +60,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIStationWindow), "OnStationIdChange")]
-        [YummiHarness.Guard("a94c837d579532f7")]
+        [CatAPI.Guard("a94c837d579532f7")]
         public static void OnStationIdChange_Postfix(UIStationWindow __instance)
         {
             FitToScreen(__instance);
@@ -68,7 +68,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIStationWindow), "RefreshTrans")]
-        [YummiHarness.Guard("5d8291ee6f5744c2")]
+        [CatAPI.Guard("5d8291ee6f5744c2")]
         public static void RefreshTrans_Postfix(UIStationWindow __instance, StationComponent station)
         {
             if (SlotStorage.IsTower(station) && station.storage != null)
@@ -89,7 +89,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIStationWindow), "_OnUpdate")]
-        [YummiHarness.Guard("6c606ffa0548b6f2")]
+        [CatAPI.Guard("6c606ffa0548b6f2")]
         public static void OnUpdate_Postfix(UIStationWindow __instance)
         {
             ManualSlotButton.Ensure(__instance);
@@ -188,7 +188,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIStationWindow), "_OnClose")]
-        [YummiHarness.Guard("9e2a9bfe01bb5e94")]
+        [CatAPI.Guard("9e2a9bfe01bb5e94")]
         public static void OnClose_Postfix()
         {
             lastWindow = null;

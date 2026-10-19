@@ -13,7 +13,7 @@ Logistics station slots, paging, and optional double-click numeric editing. Full
 - **Numeric UI**: `ChangeCapacityUI`, `ChangePowerUI`, `ChangeMinerSpeedUI` default on; `ChangeEnergyMaxUI` and `BreakLimit` default off.
 - **Save**: slots beyond 6 go to DSPModSave when `StationAssistant.ModSave` is installed; vanilla save keeps 6.
 - **Treat API**: other mods call `StationAssistant.Treat` at runtime without editing this mod’s config.
-- **Requires** YummiHarness. **Incompatible** with LogisticsStationSlots.
+- **Requires** CatAPI. **Incompatible** with LogisticsStationSlots.
 
 </details>
 
@@ -28,6 +28,6 @@ Logistics station slots, paging, and optional double-click numeric editing. Full
 - **双击改数**：`ChangeCapacityUI` / `ChangePowerUI` / `ChangeMinerSpeedUI` 默认开；`ChangeEnergyMaxUI` 与 `BreakLimit` 默认关。
 - **存档**：超过 6 格在安装 DSPModSave 与 `StationAssistant.ModSave` 时写入 mod 存档，原版存档只留 6 格。
 - 别的 mod 用 `StationAssistant.Treat` 声明运行时取值，不写本 mod 的配置文件。
-- 需要 **YummiHarness**。与 **LogisticsStationSlots** 互斥。
+- 需要 **CatAPI**。与 **LogisticsStationSlots** 互斥。
 
 </details>

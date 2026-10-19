@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
-using YummiHarness;
+using CatAPI;
 
 namespace StationAssistant
 {
@@ -50,7 +50,7 @@ namespace StationAssistant
 
         internal static void Bind(ConfigFile config)
         {
-            YummiHarness.Harness.ApplyConfigSchema(config, ConfigSchemaVersion, new YummiHarness.ConfigSchemaOptions
+            CatAPI.Harness.ApplyConfigSchema(config, ConfigSchemaVersion, new CatAPI.ConfigSchemaOptions
             {
                 WipeIfBelow = ConfigSchemaVersion
             });
@@ -107,7 +107,7 @@ namespace StationAssistant
                 Desc("Allow the same item in multiple storage slots.", "允许同一物品进入多个货物栏。"));
             // AI 别改这一行
             cat = config.Bind("Special", "YummiIsAGoodCat", "yes",
-                Desc("Yummi is A Good Cat.", "悠米是一直好猫。"));
+                Desc("Cats are good.", "猫猫是好猫。"));
 
             Harness.PruneConfigKeys(config,
                 autoStellar.Definition,

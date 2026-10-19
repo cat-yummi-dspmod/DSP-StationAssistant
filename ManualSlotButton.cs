@@ -92,12 +92,12 @@ namespace StationAssistant
 
         private static string SlotButtonText(int count)
         {
-            return YummiHarness.Lang.En("Slots: " + count).ZhCN("槽位数目 : " + count);
+            return CatAPI.Lang.En("Slots: " + count).ZhCN("槽位数目 : " + count);
         }
 
         private static string DialogTitle()
         {
-            return YummiHarness.Lang.En("Set slot count").ZhCN("设置槽位数目");
+            return CatAPI.Lang.En("Set slot count").ZhCN("设置槽位数目");
         }
 
         private static void Open(UIStationWindow window)
@@ -112,7 +112,7 @@ namespace StationAssistant
                 return;
             }
             int current = station.storage.Length;
-            PopNumber.Show(DialogTitle(), current.ToString(), YummiHarness.Lang.En($"Item kinds this station can hold. Current: {current}").ZhCN($"物流塔可容纳的物品数种类，目前为{current}"), InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(DialogTitle(), current.ToString(), CatAPI.Lang.En($"Item kinds this station can hold. Current: {current}").ZhCN($"物流塔可容纳的物品数种类，目前为{current}"), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!int.TryParse(text.Trim(), out int count))
                 {

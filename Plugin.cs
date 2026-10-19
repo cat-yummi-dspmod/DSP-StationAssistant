@@ -5,7 +5,7 @@ using HarmonyLib;
 namespace StationAssistant
 {
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
-    [BepInDependency(YummiHarness.HarnessPlugin.PluginGuid)]
+    [BepInDependency(CatAPI.HarnessPlugin.PluginGuid)]
     [BepInDependency(LogisticsStationSlotsConflict.Guid, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
@@ -14,7 +14,7 @@ namespace StationAssistant
         public const string PluginVersion = "0.1.8";
 
         private static readonly Harmony harmony = new Harmony(PluginGuid);
-        private static readonly YummiHarness.PatchOptions HarnessOptions = new YummiHarness.PatchOptions { ModName = PluginName };
+        private static readonly CatAPI.PatchOptions HarnessOptions = new CatAPI.PatchOptions { ModName = PluginName };
 
         internal static ManualLogSource Log;
         internal static Plugin Instance { get; private set; }
@@ -27,8 +27,8 @@ namespace StationAssistant
             CatFeature.Apply();
             MainMenuBootstrap.Init(this);
             ConflictStartup.BeginScan(this);
-            YummiHarness.Harness.RegisterConflict(PluginName, LogisticsStationSlotsConflict.Guid, "LogisticsStationSlots");
-            YummiHarness.Harness.PatchAll(harmony, typeof(MainMenuBootstrap), HarnessOptions);
+            CatAPI.Harness.RegisterConflict(PluginName, LogisticsStationSlotsConflict.Guid, "LogisticsStationSlots");
+            CatAPI.Harness.PatchAll(harmony, typeof(MainMenuBootstrap), HarnessOptions);
             Log.LogInfo($"{PluginName} v{PluginVersion} 等待主菜单就绪后再启用");
         }
 
@@ -40,15 +40,15 @@ namespace StationAssistant
                 return;
             }
 
-            YummiHarness.Harness.PatchAll(harmony, typeof(StationExpandPatch), HarnessOptions);
-            YummiHarness.Harness.PatchAll(harmony, typeof(StationLogicPatch), HarnessOptions);
-            YummiHarness.Harness.PatchAll(harmony, typeof(StationWindowPatch), HarnessOptions);
-            YummiHarness.Harness.PatchAll(harmony, typeof(ControlPanelStoragePaging), HarnessOptions);
-            YummiHarness.Harness.PatchAll(harmony, typeof(WheelZoomGuard), HarnessOptions);
-            YummiHarness.Harness.PatchAll(harmony, typeof(HoverIconPatch), HarnessOptions);
-            YummiHarness.Harness.PatchAll(harmony, typeof(NumericEditPatch), HarnessOptions);
-            YummiHarness.Harness.PatchAll(harmony, typeof(DuplicateItemPatch), HarnessOptions);
-            YummiHarness.Harness.PatchAll(harmony, typeof(ModSaveBridge), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(StationExpandPatch), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(StationLogicPatch), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(StationWindowPatch), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(ControlPanelStoragePaging), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(WheelZoomGuard), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(HoverIconPatch), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(NumericEditPatch), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(DuplicateItemPatch), HarnessOptions);
+            CatAPI.Harness.PatchAll(harmony, typeof(ModSaveBridge), HarnessOptions);
             Log.LogInfo($"{PluginName} v{PluginVersion} 已加载");
         }
 

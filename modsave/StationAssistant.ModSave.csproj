@@ -12,7 +12,7 @@
 		<PackageReference Include="BepInEx.Core" Version="5.4.17" />
 		<ProjectReference Include="..\StationAssistant.csproj" Private="false" />
 		<Reference Include="DSPModSave">
-			<HintPath>$(APPDATA)\r2modmanPlus-local\DysonSphereProgram\profiles\YummiHarness\BepInEx\plugins\CommonAPI-DSPModSave\DSPModSave.dll</HintPath>
+			<HintPath>$(APPDATA)\r2modmanPlus-local\DysonSphereProgram\profiles\CatAPI\BepInEx\plugins\CommonAPI-DSPModSave\DSPModSave.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 	</ItemGroup>

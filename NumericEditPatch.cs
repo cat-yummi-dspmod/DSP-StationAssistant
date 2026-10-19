@@ -14,7 +14,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(PlanetTransport), nameof(PlanetTransport.SetStationStorage))]
-        [YummiHarness.Guard("1eb74a6188c74249")]
+        [CatAPI.Guard("1eb74a6188c74249")]
         public static void SetStationStorage_Prefix(int itemCountMax)
         {
             pendingMax = Settings.BreakLimit && userEdit ? itemCountMax : int.MinValue;
@@ -22,7 +22,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlanetTransport), nameof(PlanetTransport.SetStationStorage))]
-        [YummiHarness.Guard("1eb74a6188c74249")]
+        [CatAPI.Guard("1eb74a6188c74249")]
         public static void SetStationStorage_Postfix(PlanetTransport __instance, int stationId, int storageIdx)
         {
             if (pendingMax == int.MinValue)
@@ -41,7 +41,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIStationStorage), "_OnUpdate")]
-        [YummiHarness.Guard("957c0ae7be9f0a0b")]
+        [CatAPI.Guard("957c0ae7be9f0a0b")]
         public static void Storage_OnUpdate(UIStationStorage __instance)
         {
             if (!Settings.ChangeCapacityUI || __instance.station == null || __instance.maxValueText == null)
@@ -53,7 +53,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIControlPanelStationStorage), "_OnUpdate")]
-        [YummiHarness.Guard("5fb4930620470ae4")]
+        [CatAPI.Guard("5fb4930620470ae4")]
         public static void PanelStorage_OnUpdate(UIControlPanelStationStorage __instance)
         {
             if (!Settings.ChangeCapacityUI || !__instance.isStationDataValid || __instance.maxValueText == null
@@ -66,7 +66,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIStationStorage), "RefreshValues")]
-        [YummiHarness.Guard("94abf08893f0dfc3")]
+        [CatAPI.Guard("94abf08893f0dfc3")]
         public static void Refresh_Prefix()
         {
             if (Settings.ChangeCapacityUI)
@@ -77,7 +77,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIStationStorage), "RefreshValues")]
-        [YummiHarness.Guard("94abf08893f0dfc3")]
+        [CatAPI.Guard("94abf08893f0dfc3")]
         public static void Refresh_Postfix()
         {
             if (Settings.ChangeCapacityUI)
@@ -88,7 +88,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIControlPanelStationStorage), "RefreshValues")]
-        [YummiHarness.Guard("dd4005879a70d9e4")]
+        [CatAPI.Guard("dd4005879a70d9e4")]
         public static void PanelRefresh_Prefix()
         {
             if (Settings.ChangeCapacityUI)
@@ -99,7 +99,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIControlPanelStationStorage), "RefreshValues")]
-        [YummiHarness.Guard("dd4005879a70d9e4")]
+        [CatAPI.Guard("dd4005879a70d9e4")]
         public static void PanelRefresh_Postfix()
         {
             if (Settings.ChangeCapacityUI)
@@ -110,7 +110,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIStationStorage), "OnMaxSliderValueChange")]
-        [YummiHarness.Guard("a168bac3333c06e9")]
+        [CatAPI.Guard("a168bac3333c06e9")]
         public static bool Slider_Prefix()
         {
             return !Settings.ChangeCapacityUI || refreshDepth <= 0;
@@ -118,7 +118,7 @@ namespace StationAssistant
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UIControlPanelStationStorage), "OnMaxSliderValueChange")]
-        [YummiHarness.Guard("7aa31034fac15357")]
+        [CatAPI.Guard("7aa31034fac15357")]
         public static bool PanelSlider_Prefix()
         {
             return !Settings.ChangeCapacityUI || refreshDepth <= 0;
@@ -126,7 +126,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIStationWindow), "_OnUpdate")]
-        [YummiHarness.Guard("6c606ffa0548b6f2")]
+        [CatAPI.Guard("6c606ffa0548b6f2")]
         public static void Window_OnUpdate(UIStationWindow __instance)
         {
             if (__instance.stationId == 0 || __instance.transport == null)
@@ -186,7 +186,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIControlPanelStationInspector), "_OnUpdate")]
-        [YummiHarness.Guard("b89aade680ae7db9")]
+        [CatAPI.Guard("b89aade680ae7db9")]
         public static void Inspector_OnUpdate(UIControlPanelStationInspector __instance)
         {
             if (__instance.stationId == 0 || __instance.factory == null || __instance.transport == null)
@@ -224,7 +224,7 @@ namespace StationAssistant
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UIMinerWindow), "_OnUpdate")]
-        [YummiHarness.Guard("58681ea0364989f7")]
+        [CatAPI.Guard("58681ea0364989f7")]
         public static void Miner_OnUpdate(UIMinerWindow __instance)
         {
             if (!Settings.ChangeMinerSpeedUI || __instance.minerId == 0 || __instance.factory == null || __instance.speedText == null)
@@ -234,7 +234,7 @@ namespace StationAssistant
             Attach(__instance, __instance.speedText, () =>
             {
                 int speed = __instance.factorySystem.minerPool[__instance.minerId].speed;
-                PopNumber.Show(YummiHarness.Lang.En("Mining speed").ZhCN("采集效率"), speed.ToString(), FieldValue("MinerComponent.speed", "速度值（界面百分比 = 该值 / 100）", "speed (shown percent = value / 100)", speed), InputField.ContentType.IntegerNumber, text =>
+                PopNumber.Show(CatAPI.Lang.En("Mining speed").ZhCN("采集效率"), speed.ToString(), FieldValue("MinerComponent.speed", "速度值（界面百分比 = 该值 / 100）", "speed (shown percent = value / 100)", speed), InputField.ContentType.IntegerNumber, text =>
                 {
                     if (!int.TryParse(text.Trim(), out int value))
                     {
@@ -254,7 +254,7 @@ namespace StationAssistant
                 return;
             }
             int current = station.storage[index].max;
-            PopNumber.Show(YummiHarness.Lang.En("Item capacity").ZhCN("物品容量"), current.ToString(), FieldValue("StationStore.max", "个", "items", current), InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(CatAPI.Lang.En("Item capacity").ZhCN("物品容量"), current.ToString(), FieldValue("StationStore.max", "个", "items", current), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!int.TryParse(text.Trim(), out int value) || value < 0)
                 {
@@ -280,7 +280,7 @@ namespace StationAssistant
                 return;
             }
             long current = factory.powerSystem.consumerPool[station.pcId].workEnergyPerTick;
-            PopNumber.Show(YummiHarness.Lang.En("Charge power").ZhCN("充电功率"), current.ToString(), FieldValue("workEnergyPerTick", "焦耳每帧", "joules per tick", current), InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(CatAPI.Lang.En("Charge power").ZhCN("充电功率"), current.ToString(), FieldValue("workEnergyPerTick", "焦耳每帧", "joules per tick", current), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!long.TryParse(text.Trim(), out long value) || value < 0)
                 {
@@ -322,7 +322,7 @@ namespace StationAssistant
                 return;
             }
             int current = factory.factorySystem.minerPool[station.minerId].speed;
-            PopNumber.Show(YummiHarness.Lang.En("Mining speed").ZhCN("采集效率"), current.ToString(), FieldValue("MinerComponent.speed", "速度值（界面百分比 = 该值 / 100）", "speed (shown percent = value / 100)", current), InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(CatAPI.Lang.En("Mining speed").ZhCN("采集效率"), current.ToString(), FieldValue("MinerComponent.speed", "速度值（界面百分比 = 该值 / 100）", "speed (shown percent = value / 100)", current), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!int.TryParse(text.Trim(), out int value))
                 {
@@ -363,7 +363,7 @@ namespace StationAssistant
 
         private static void EditEnergy(StationComponent station)
         {
-            PopNumber.Show(YummiHarness.Lang.En("Charge cap").ZhCN("充电上限"), station.energyMax.ToString(), FieldValue("energyMax", "焦耳", "joules", station.energyMax), InputField.ContentType.IntegerNumber, text =>
+            PopNumber.Show(CatAPI.Lang.En("Charge cap").ZhCN("充电上限"), station.energyMax.ToString(), FieldValue("energyMax", "焦耳", "joules", station.energyMax), InputField.ContentType.IntegerNumber, text =>
             {
                 if (!long.TryParse(text.Trim(), out long value) || value < 1)
                 {
@@ -387,7 +387,7 @@ namespace StationAssistant
 
         private static string FieldValue(string variable, string unitZh, string unitEn, long current)
         {
-            return YummiHarness.Lang.En($"In-game variable: {variable}\nUnit: {unitEn}\nCurrent value: {current}")
+            return CatAPI.Lang.En($"In-game variable: {variable}\nUnit: {unitEn}\nCurrent value: {current}")
                 .ZhCN($"游戏内的变量名为 {variable}\n单位是{unitZh}\n目前的值为 {current}");
         }
 
